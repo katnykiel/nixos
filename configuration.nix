@@ -80,9 +80,8 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.ego = {
     isNormalUser = true;
-  services.xserver.displayManager.gdm.wayland = false;
     description = "ego";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "openrazer" ];
     packages = with pkgs; [
     #  thunderbird
     ];
@@ -110,7 +109,11 @@
     tor-browser
     discord
     spotify
+    thunderbird
+    vscode
   ];
+
+  virtualisation.docker.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
