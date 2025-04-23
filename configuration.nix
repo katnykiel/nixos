@@ -61,18 +61,30 @@
   # Enable sound with pipewire.
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+    jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
+
+  services.pipewire.wireplumber.extraConfig.bluetoothEnhancements = {
+    "bluez5.enable-sbc-xq" = true;
+    "bluez5.enable-msbc" = true;
+    "bluez5.enable-hw-volume" = true;
+  };
+
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -81,7 +93,7 @@
   users.users.ego = {
     isNormalUser = true;
     description = "ego";
-    extraGroups = [ "networkmanager" "wheel" "docker" "openrazer" ];
+    extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     #  thunderbird
     ];
@@ -97,6 +109,13 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # Define an overlay for unstable packages
+  nixpkgs.overlays = [
+    (self: super: {
+      unstable = import (fetchTarball https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz) {};
+    })
+  ];
+  
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -104,16 +123,47 @@
     wget
     fastfetch
     git
-    ollama-cuda
     protonvpn-gui
     tor-browser
     discord
     spotify
     thunderbird
     vscode
+    vscodium
+    tectonic
+    prismlauncher
+    pkgs.unstable.btop-cuda
+    gnomeExtensions.pop-shell
+    pkgs.unstable.ollama-cuda
+    uv
   ];
 
+
+  # Enable steam
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+  };
+
+  # Enable docker
   virtualisation.docker.enable = true;
+  virtualisation.docker.rootless = {
+    enable = true;
+    setSocketVariable = true;
+  };
+  
+  # Enable syncthing
+  services = {
+    syncthing = {
+        enable = true;
+        group = "users";
+        user = "ego";
+        dataDir = "/home/ego/Documents";    # Default folder for new synced folders
+        configDir = "/home/ego/Documents/.config/syncthing";   # Folder for Syncthing's settings and keys
+    };
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -132,7 +182,7 @@
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  #  networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
