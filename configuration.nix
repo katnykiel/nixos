@@ -58,33 +58,20 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable sound with pipewire.
-  hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  hardware.bluetooth = {
+  # Enable bluetooth
+  hardware.bluetooth.enable = true; # enables support for Bluetooth
+  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
+
+  hardware.pulseaudio = {
     enable = true;
-    powerOnBoot = true;
+    package = pkgs.pulseaudioFull;
   };
 
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
+  hardware.bluetooth.settings = {
+    General = {
+      Enable = "Source,Sink,Media,Socket";
+    };
   };
-
-  services.pipewire.wireplumber.extraConfig.bluetoothEnhancements = {
-    "bluez5.enable-sbc-xq" = true;
-    "bluez5.enable-msbc" = true;
-    "bluez5.enable-hw-volume" = true;
-  };
-
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -93,7 +80,7 @@
   users.users.ego = {
     isNormalUser = true;
     description = "ego";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [
     #  thunderbird
     ];
@@ -132,12 +119,12 @@
     vscodium
     tectonic
     prismlauncher
+    pkgs.unstable.ollama-cuda
     pkgs.unstable.btop-cuda
     gnomeExtensions.pop-shell
-    pkgs.unstable.ollama-cuda
     uv
+    gnupg
   ];
-
 
   # Enable steam
   programs.steam = {
@@ -149,11 +136,7 @@
 
   # Enable docker
   virtualisation.docker.enable = true;
-  virtualisation.docker.rootless = {
-    enable = true;
-    setSocketVariable = true;
-  };
-  
+
   # Enable syncthing
   services = {
     syncthing = {
@@ -179,7 +162,7 @@
   # services.openssh.enable = true;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 11434 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   #  networking.firewall.enable = false;
