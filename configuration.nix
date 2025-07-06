@@ -85,13 +85,6 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # Define an overlay for unstable packages
-  nixpkgs.overlays = [
-    (self: super: {
-      unstable = import (fetchTarball https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz) {};
-    })
-  ];
-  
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -108,8 +101,8 @@
     vscodium
     tectonic
     prismlauncher
-    pkgs.unstable.ollama-cuda
-    pkgs.unstable.btop-cuda
+    ollama-cuda
+    btop-cuda
     gnomeExtensions.pop-shell
     uv
     gnupg
@@ -201,7 +194,7 @@
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 
 }
