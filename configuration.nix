@@ -2,9 +2,10 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
+
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -14,6 +15,11 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Use latest kernel.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # Enable networking
+  networking.networkmanager.enable = true;
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -21,11 +27,8 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
-  networking.networkmanager.enable = true;
-
   # Set your time zone.
-  time.timeZone = "America/Indiana/Indianapolis";
+  time.timeZone = "America/New_York";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -48,7 +51,7 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-  
+
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
@@ -58,32 +61,42 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable bluetooth
-  hardware.bluetooth.enable = true; # enables support for Bluetooth
-  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
+  # Enable sound with pipewire.
+  services.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
+
+    # use the example session manager (no others are packaged yet so this is enabled by default,
+    # no need to redefine it in your config for now)
+    #media-session.enable = true;
+  };
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.ego = {
+  users.users.artaud = {
     isNormalUser = true;
-    description = "ego";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    description = "artaud";
+    extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     #  thunderbird
     ];
   };
 
-  # Add automatic upgrades
-  system.autoUpgrade.enable = true;
-  system.autoUpgrade.allowReboot = true;
-
-  # Install firefox.
+  # Install various programs
   programs.firefox.enable = true;
+  programs.gpaste.enable = true;
+  programs.zsh.enable = true;
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+  # Change the default shell to zsh
+  users.defaultUserShell = pkgs.zsh; 
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -94,26 +107,133 @@
     git
     protonvpn-gui
     tor-browser
-    discord
-    spotify
-    thunderbird
-    vscode
     vscodium
+    neovim
     tectonic
-    prismlauncher
-    ollama-cuda
-    btop-cuda
-    gnomeExtensions.pop-shell
+    ollama
+    btop
     uv
     gnupg
+    kitty
+    zotero
+    libreoffice
+    vscode
+    spotify-player
+    inkscape
+    pidgin
+    newsboat
+    kdePackages.kleopatra
+    gnomeExtensions.pop-shell
+    gnomeExtensions.night-theme-switcher
+    gnomeExtensions.rounded-window-corners-reborn
   ];
 
-  # Enable steam
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+  # Set bootloader to remember and use the most recent version
+  boot.loader.grub.default = "saved";
+  boot.loader.grub.extraConfig = ''
+    set default=0
+  '';
+
+  # Enable glance service
+  services.glance.enable = true;
+  services.glance.settings = {
+    pages = [
+      
+      {
+        columns = [
+          {
+            size = "small";
+            widgets = [
+              {
+                type = "calendar";
+              }
+              {
+                location = "West Lafayette, United States";
+                type = "weather";
+                units = "imperial";
+              }
+            ];
+          }
+          {
+            size = "full";
+            widgets = [
+              {
+                type = "rss";
+                title = "Materials Science Journals";
+                limit = 12;
+                feeds = [
+                  {
+                    url = "https://rss.sciencedirect.com/publication/science/09270256";
+                    title = "Computational Materials Science";
+                  }
+                  {
+                    url = "https://www.nature.com/npjcompumats.rss";
+                    title = "npj Computational Materials";
+                  }
+                  {
+                    url = "https://www.nature.com/nmat.rss";
+                    title = "Nature Materials";
+                  }
+                  {
+                    url = "https://www.mdpi.com/rss/journal/materials";
+                    title = "Materials (MDPI)";
+                  }
+                  {
+                    url = "https://arxiv.org/rss/cond-mat.mtrl-sci";
+                    title = "arXiv Materials Science";
+                  }
+                  {
+                    url = "https://arxiv.org/rss/physics.comp-ph";
+                    title = "arXiv Computational Physics";
+                  }
+                ];
+              }
+            ];
+          }
+          {
+            size = "small";
+            widgets = [
+              {
+                type = "rss";
+                title = "Academic Resources";
+                feeds = [
+                  {
+                    url = "https://huggingface.co/blog/feed.xml";
+                    title = "Hugging Face Blog";
+                  }
+                  {
+                    url = "https://katnykiel.github.io/blog/index.xml";
+                    title = "Kat Nykiel Blog";
+                  }
+                  {
+                    url = "https://www.rcac.purdue.edu/news/rss/Outages%20and%20Maintenance";
+                    title = "RCAC Maintenance";
+                  }
+                ];
+              }
+              {
+              type = "releases";
+              title = "software releases";
+              repositories = [
+                "materialsproject/pymatgen"
+                "materialsproject/atomate2"
+                "mir-group/nequip"
+                "autoatml/autoplex"
+                "deepmodeling/dpdata"
+                "materialsproject/custodian"
+                "materialsproject/jobflow"
+                "materialsproject/maggma"
+              ];
+            }
+            ];
+          }
+        ];
+        name = "academia";
+      }
+    ];
+    server = {
+      port = 5678;
+    };
   };
 
   # Enable docker
@@ -124,11 +244,60 @@
     syncthing = {
         enable = true;
         group = "users";
-        user = "ego";
-        dataDir = "/home/ego/Documents";    # Default folder for new synced folders
-        configDir = "/home/ego/Documents/.config/syncthing";   # Folder for Syncthing's settings and keys
+        user = "artaud";
+        dataDir = "/home/artaud/Documents";    # Default folder for new synced folders
+        configDir = "/home/artaud/Documents/.config/syncthing";   # Folder for Syncthing's settings and keys
     };
   };
+
+  # Install the driver
+  services.fprintd.enable = true;
+
+  # # Enable hyprland
+  # programs.hyprland = {
+  #   # Install the packages from nixpkgs
+  #   enable = true;
+  #   # Whether to enable XWayland
+  #   xwayland.enable = true;
+  # };
+
+  # # Enable waybar
+  # programs.waybar = {
+  #   enable = true;
+  # };
+
+  # # Adds some fonts
+  # fonts.packages = with pkgs; [
+  #   nerd-fonts.fira-code
+  #   nerd-fonts.droid-sans-mono
+  # ];
+
+#   # Try to extend battery life beyond gnome defaults
+#   services.power-profiles-daemon.enable = false;
+#   powerManagement.enable = true;
+#   services.thermald.enable = true;
+
+#   services.tlp = {
+#       enable = true;
+#       settings = {
+#         CPU_SCALING_GOVERNOR_ON_AC = "performance";
+#         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+
+#         CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+#         CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+
+#         CPU_MIN_PERF_ON_AC = 0;
+#         CPU_MAX_PERF_ON_AC = 100;
+#         CPU_MIN_PERF_ON_BAT = 0;
+#         CPU_MAX_PERF_ON_BAT = 20;
+
+#        #Optional helps save long term battery health
+#        START_CHARGE_THRESH_BAT0 = 40; # 40 and below it starts to charge
+#        STOP_CHARGE_THRESH_BAT0 = 80; # 80 and above it stops charging
+
+#       };
+# };
+
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -144,10 +313,10 @@
   # services.openssh.enable = true;
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 11434 ];
+  # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  #  networking.firewall.enable = false;
+  # networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -155,46 +324,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.11"; # Did you read the comment?
-  
-  # Enable OpenGL
-  hardware.graphics = {
-    enable = true;
-  };
-
-  # Load nvidia driver for Xorg and Wayland
-  services.xserver.videoDrivers = ["nvidia"];
-
-  hardware.nvidia = {
-
-    # Modesetting is required.
-    modesetting.enable = true;
-
-    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
-    # Enable this if you have graphical corruption issues or application crashes after waking
-
-    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead 
-    # of just the bare essentials.
-    powerManagement.enable = false;
-
-    # Fine-grained power management. Turns off GPU when not in use.
-    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-    powerManagement.finegrained = false;
-
-    # Use the NVidia open source kernel module (not to be confused with the
-    # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of 
-    # supported GPUs is at: 
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
-    # Only available from driver 515.43.04+
-    open = true;
-
-    # Enable the Nvidia settings menu,
-	# accessible via `nvidia-settings`.
-    nvidiaSettings = true;
-
-    # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
-  };
+  system.stateVersion = "25.05"; # Did you read the comment?
 
 }
