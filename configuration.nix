@@ -250,8 +250,30 @@
     };
   };
 
+  # Specify encrypted disk partition id
+  boot.initrd.luks.devices."luks-198aef4c-3bd7-4efd-bcd9-bbf207d06b4a".device = "/dev/disk/by-uuid/198aef4c-3bd7-4efd-bcd9-bbf207d06b4a";
+
+   # Allow some unfree
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      (lib.getName pkgs.vscode)
+      (lib.getName pkgs.mongodb-compass)
+    ];
+
+  # Enable figerprint reader
   # Install the driver
   services.fprintd.enable = true;
+  # Start the driver at boot
+  systemd.services.fprintd = {
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "simple";
+  };
+
+
+  # Enable nouveau
+  hardware.graphics = {
+    enable = true;
+  };
 
   # # Enable hyprland
   # programs.hyprland = {
