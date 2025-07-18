@@ -117,11 +117,13 @@
     kitty
     zotero
     libreoffice
-    vscode
     spotify-player
     inkscape
     pidgin
     newsboat
+    signal-desktop
+    vscode
+    mongodb-compass
     kdePackages.kleopatra
     gnomeExtensions.pop-shell
     gnomeExtensions.night-theme-switcher
@@ -144,6 +146,26 @@
           {
             size = "small";
             widgets = [
+              { type = "bookmarks";
+                groups = [
+                  {
+                    links = [
+                      {
+                        url = "https://katnykiel.atlassian.net/jira/software/projects/KAT/boards/1";
+                        title = "jira";
+                      }
+                      {
+                        url = "https://app.slack.com/client/T02HLBU8A3E";
+                        title = "slack";
+                      }
+                      {
+                        url = "https://outlook.office.com/mail/inbox/id/AAQkADIxYTZkYTdiLWVkNDktNDViMS05NjBmLWE5M2RiMmIxZjhkMQAQAIKwDotMs%2BNJs8PRRKdjI2M%3D";
+                        title = "outlook";
+                      }
+                    ];
+                  }
+                ];
+              }
               {
                 type = "calendar";
               }
@@ -160,12 +182,7 @@
               {
                 type = "rss";
                 title = "Materials Science Journals";
-                limit = 12;
                 feeds = [
-                  {
-                    url = "https://rss.sciencedirect.com/publication/science/09270256";
-                    title = "Computational Materials Science";
-                  }
                   {
                     url = "https://www.nature.com/npjcompumats.rss";
                     title = "npj Computational Materials";
@@ -175,16 +192,8 @@
                     title = "Nature Materials";
                   }
                   {
-                    url = "https://www.mdpi.com/rss/journal/materials";
-                    title = "Materials (MDPI)";
-                  }
-                  {
                     url = "https://arxiv.org/rss/cond-mat.mtrl-sci";
                     title = "arXiv Materials Science";
-                  }
-                  {
-                    url = "https://arxiv.org/rss/physics.comp-ph";
-                    title = "arXiv Computational Physics";
                   }
                 ];
               }
@@ -219,16 +228,21 @@
                 "materialsproject/atomate2"
                 "mir-group/nequip"
                 "autoatml/autoplex"
-                "deepmodeling/dpdata"
                 "materialsproject/custodian"
                 "materialsproject/jobflow"
                 "materialsproject/maggma"
+                "hackingmaterials/amset"
+                "materialsvirtuallab/matgl"
+                "materialsproject/fireworks"
+                "materialsproject/api"
+                "materialsproject/emmet"
+                "materialsproject/crystaltoolkit"
               ];
             }
             ];
           }
         ];
-        name = "academia";
+        name = "glance";
       }
     ];
     server = {
@@ -253,12 +267,11 @@
   # Specify encrypted disk partition id
   boot.initrd.luks.devices."luks-198aef4c-3bd7-4efd-bcd9-bbf207d06b4a".device = "/dev/disk/by-uuid/198aef4c-3bd7-4efd-bcd9-bbf207d06b4a";
 
-   # Allow some unfree
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [
-      (lib.getName pkgs.vscode)
-      (lib.getName pkgs.mongodb-compass)
-    ];
+  # Allow some unfree
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "vscode"
+    "mongodb-compass"
+  ];
 
   # Enable figerprint reader
   # Install the driver
@@ -288,11 +301,11 @@
   #   enable = true;
   # };
 
-  # # Adds some fonts
-  # fonts.packages = with pkgs; [
-  #   nerd-fonts.fira-code
-  #   nerd-fonts.droid-sans-mono
-  # ];
+  # Adds some fonts
+  fonts.packages = with pkgs; [
+    nerd-fonts.fira-code
+    nerd-fonts.droid-sans-mono
+  ];
 
 #   # Try to extend battery life beyond gnome defaults
 #   services.power-profiles-daemon.enable = false;
