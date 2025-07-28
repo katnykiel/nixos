@@ -18,6 +18,9 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # Enable 'experimental' features
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # Enable networking
   networking.networkmanager.enable = true;
   networking.hostName = "nixos"; # Define your hostname.
@@ -76,7 +79,6 @@
     # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
-
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
@@ -110,7 +112,6 @@
     vscodium
     neovim
     tectonic
-    ollama
     btop
     uv
     gnupg
@@ -122,8 +123,8 @@
     pidgin
     newsboat
     signal-desktop
-    vscode
-    mongodb-compass
+    weechat
+    docker-compose
     kdePackages.kleopatra
     gnomeExtensions.pop-shell
     gnomeExtensions.night-theme-switcher
@@ -135,6 +136,14 @@
   boot.loader.grub.extraConfig = ''
     set default=0
   '';
+
+  # Enable ollama service
+  services.ollama = {
+    enable = true;
+    # Optional: preload models, see https://ollama.com/library
+    loadModels = [ "llama3.2:3b" "mxbai-embed-large" ];
+  };
+
 
   # Enable glance service
   services.glance.enable = true;
@@ -252,6 +261,10 @@
 
   # Enable docker
   virtualisation.docker.enable = true;
+  virtualisation.docker.rootless = {
+    enable = true;
+    setSocketVariable = true;
+  };
 
   # Enable syncthing
   services = {
@@ -267,22 +280,14 @@
   # Specify encrypted disk partition id
   boot.initrd.luks.devices."luks-198aef4c-3bd7-4efd-bcd9-bbf207d06b4a".device = "/dev/disk/by-uuid/198aef4c-3bd7-4efd-bcd9-bbf207d06b4a";
 
-  # Allow some unfree
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "vscode"
-    "mongodb-compass"
-  ];
+# Start the driver at boot
+systemd.services.fprintd = {
+  wantedBy = [ "multi-user.target" ];
+  serviceConfig.Type = "simple";
+};
 
-  # Enable figerprint reader
-  # Install the driver
-  services.fprintd.enable = true;
-  # Start the driver at boot
-  systemd.services.fprintd = {
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig.Type = "simple";
-  };
-
-
+# Install the driver
+services.fprintd.enable = true;
   # Enable nouveau
   hardware.graphics = {
     enable = true;
@@ -307,31 +312,31 @@
     nerd-fonts.droid-sans-mono
   ];
 
-#   # Try to extend battery life beyond gnome defaults
-#   services.power-profiles-daemon.enable = false;
-#   powerManagement.enable = true;
-#   services.thermald.enable = true;
+  # # Try to extend battery life beyond gnome defaults
+  # services.power-profiles-daemon.enable = false;
+  # powerManagement.enable = true;
+  # services.thermald.enable = true;
 
-#   services.tlp = {
-#       enable = true;
-#       settings = {
-#         CPU_SCALING_GOVERNOR_ON_AC = "performance";
-#         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+  # services.tlp = {
+  #     enable = true;
+  #     settings = {
+  #       CPU_SCALING_GOVERNOR_ON_AC = "performance";
+  #       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
-#         CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-#         CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+  #       CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+  #       CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
 
-#         CPU_MIN_PERF_ON_AC = 0;
-#         CPU_MAX_PERF_ON_AC = 100;
-#         CPU_MIN_PERF_ON_BAT = 0;
-#         CPU_MAX_PERF_ON_BAT = 20;
+  #       CPU_MIN_PERF_ON_AC = 0;
+  #       CPU_MAX_PERF_ON_AC = 100;
+  #       CPU_MIN_PERF_ON_BAT = 0;
+  #       CPU_MAX_PERF_ON_BAT = 20;
 
-#        #Optional helps save long term battery health
-#        START_CHARGE_THRESH_BAT0 = 40; # 40 and below it starts to charge
-#        STOP_CHARGE_THRESH_BAT0 = 80; # 80 and above it stops charging
+  #      #Optional helps save long term battery health
+  #      START_CHARGE_THRESH_BAT0 = 40; # 40 and below it starts to charge
+  #      STOP_CHARGE_THRESH_BAT0 = 80; # 80 and above it stops charging
 
-#       };
-# };
+  #     };
+  # };
 
 
   # Some programs need SUID wrappers, can be configured further or are
