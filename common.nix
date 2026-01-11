@@ -118,6 +118,7 @@
     vscodium
     weechat
     wget
+    zed
     zotero
   ];
 
