@@ -32,4 +32,4 @@
     nerd-fonts.droid-sans-mono
   ];
 
-}j
+}
