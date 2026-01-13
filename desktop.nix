@@ -29,7 +29,6 @@ in
     # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    antigravity
     btop-cuda
     claude-code
     code-cursor

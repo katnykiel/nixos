@@ -117,7 +117,6 @@
     vscodium
     weechat
     wget
-    zed-editor
     zotero
   ];
 
