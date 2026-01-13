@@ -111,7 +111,6 @@
     signal-desktop
     spotify-player
     tectonic
-    thunderbird
     tor-browser
     uv
     vim

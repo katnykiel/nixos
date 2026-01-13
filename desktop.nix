@@ -1,5 +1,11 @@
 { config, pkgs, ... }:
 
+let
+  unstableTarball =
+    fetchTarball
+      https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz;
+in
+
 {
   imports = [
     ./hardware/desktop.nix
@@ -11,16 +17,25 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # Allow an unstable derivative
+  nixpkgs.config = {
+    packageOverrides = pkgs: {
+      unstable = import unstableTarball {
+        config = config.nixpkgs.config;
+      };
+    };
+  };
+
     # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     btop-cuda
     discord
-    ollama-cuda
     openjdk
     openrgb
     prismlauncher
     spotify
+    unstable.ollama-cuda
     vscode
   ];
 
@@ -28,6 +43,7 @@
   services.ollama = {
     enable = true;
     port = 11435;
+    acceleration = "cuda";
   };
 
   # Disable suspend
@@ -35,6 +51,8 @@
   systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
+  powerManagement.enable = false;
+
 
   # Enable steam
   programs.steam = {
