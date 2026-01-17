@@ -102,6 +102,7 @@
     gnomeExtensions.rounded-window-corners-reborn
     gnupg
     kdePackages.kleopatra
+    keymapp
     kitty
     libreoffice
     neovim
@@ -119,6 +120,9 @@
     wget
     zotero
   ];
+
+  # Enable ZSA keyboard support
+  hardware.keyboard.zsa.enable = true;
 
   # Set bootloader to remember and use the most recent version
   boot.loader.grub.default = "saved";
