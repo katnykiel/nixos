@@ -64,6 +64,12 @@ in
     enable = true;
   };
 
+  # Enable ollama service
+  services.ollama = {
+    enable = true;
+  };
+
+
   # Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
 
