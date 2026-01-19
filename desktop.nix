@@ -42,7 +42,6 @@ in
   # Enable ollama service
   services.ollama = {
     enable = true;
-    port = 11435;
     acceleration = "cuda";
   };
 
@@ -63,12 +62,6 @@ in
   hardware.graphics = {
     enable = true;
   };
-
-  # Enable ollama service
-  services.ollama = {
-    enable = true;
-  };
-
 
   # Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
