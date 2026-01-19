@@ -113,6 +113,7 @@
     spotify-player
     tectonic
     tor-browser
+    typst
     uv
     vim
     vscodium
