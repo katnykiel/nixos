@@ -33,9 +33,7 @@ in
     claude-code
     code-cursor
     discord
-    openjdk
     openrgb
-    prismlauncher
     spotify
     unstable.ollama-cuda
     vscode
@@ -44,7 +42,6 @@ in
   # Enable ollama service
   services.ollama = {
     enable = true;
-    port = 11435;
     acceleration = "cuda";
   };
 
@@ -54,15 +51,6 @@ in
   systemd.targets.hibernate.enable = false;
   systemd.targets.hybrid-sleep.enable = false;
   powerManagement.enable = false;
-
-
-  # Enable steam
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
-  };
 
   # Enable openrgb
   services.hardware.openrgb.enable = true;
@@ -101,15 +89,4 @@ in
 
    };
   
-  # Enable the OpenSSH daemon.
-  services.openssh = {
-    enable = true;
-    ports = [ 5432 ];
-    settings = {
-  #    PasswordAuthentication = false;
-      KbdInteractiveAuthentication = false;
-      AllowUsers = [ "artaud" ];
-    };
-  };
-  services.fail2ban.enable = true;
 }
