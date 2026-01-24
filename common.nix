@@ -15,7 +15,7 @@
 
   # Enable automatic updates
   system.autoUpgrade.enable = true;
-  system.autoUpgrade.allowReboot = true;
+  # system.autoUpgrade.allowReboot = true;
 
   # Enable 'experimental' features
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
