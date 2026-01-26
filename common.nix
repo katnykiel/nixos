@@ -105,6 +105,7 @@
     keymapp
     kitty
     libreoffice
+    ncdu
     neovim
     newsboat
     pidgin
@@ -112,6 +113,7 @@
     signal-desktop
     spotify-player
     tectonic
+    tinymist
     tor-browser
     typst
     uv
@@ -119,6 +121,7 @@
     vscodium
     weechat
     wget
+    zip
     zotero
   ];
 
