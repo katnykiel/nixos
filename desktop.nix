@@ -33,6 +33,7 @@ in
     claude-code
     code-cursor
     discord
+    keymapp
     openrgb
     spotify
     unstable.ollama-cuda

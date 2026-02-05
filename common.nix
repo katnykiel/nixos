@@ -94,6 +94,7 @@
   programs.zsh.enable = true;
 
   environment.systemPackages = with pkgs; [
+    anki
     docker-compose
     fastfetch
     git
@@ -102,7 +103,6 @@
     gnomeExtensions.rounded-window-corners-reborn
     gnupg
     kdePackages.kleopatra
-    keymapp
     kitty
     libreoffice
     neovim
