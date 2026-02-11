@@ -32,7 +32,6 @@ in
     btop-cuda
     claude-code
     code-cursor
-    discord
     openrgb
     spotify
     unstable.ollama-cuda
