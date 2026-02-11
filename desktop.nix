@@ -32,6 +32,7 @@ in
     btop-cuda
     claude-code
     code-cursor
+    keymapp
     openrgb
     spotify
     unstable.ollama-cuda
