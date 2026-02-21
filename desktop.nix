@@ -12,6 +12,9 @@ in
     ./common.nix
   ];
 
+  # Use LTS kernel.
+  boot.kernelPackages = pkgs.linuxPackages_6_12;
+
   networking.hostName = "desktop";
 
   # Allow unfree packages
@@ -31,7 +34,6 @@ in
   environment.systemPackages = with pkgs; [
     btop-cuda
     claude-code
-    code-cursor
     keymapp
     openrgb
     spotify
@@ -54,6 +56,18 @@ in
 
   # Enable openrgb
   services.hardware.openrgb.enable = true;
+
+  # Enable openssh
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = true;   # optional (disable if using keys only)
+      PermitRootLogin = "no";
+    };
+  };
+  networking.firewall.allowedTCPPorts = [ 22 ];
+
+
 
   # Specify encrypted disk partition id
   boot.initrd.luks.devices."luks-29f1033f-b941-47c9-82cf-61b8672b2f58".device = "/dev/disk/by-uuid/29f1033f-b941-47c9-82cf-61b8672b2f58";

@@ -10,9 +10,6 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
   # Enable automatic updates
   system.autoUpgrade.enable = true;
   # system.autoUpgrade.allowReboot = true;
