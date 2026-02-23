@@ -60,12 +60,13 @@ in
   # Enable openssh
   services.openssh = {
     enable = true;
+    ports = [ 51234 ];
     settings = {
       PasswordAuthentication = true;   # optional (disable if using keys only)
       PermitRootLogin = "no";
     };
   };
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  networking.firewall.allowedTCPPorts = [ 51234 ];
 
 
 
