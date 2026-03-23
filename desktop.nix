@@ -34,7 +34,7 @@ in
     claude-code
     keymapp
     openrgb
-    prism-launcher
+    prismlauncher
     spotify
     unstable.ollama-cuda
     vscode
