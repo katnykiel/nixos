@@ -17,11 +17,9 @@ in
 
   networking.hostName = "desktop";
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # Allow an unstable derivative
+  # Allow unfree and unstable derivative
   nixpkgs.config = {
+    allowUnfree = true;
     packageOverrides = pkgs: {
       unstable = import unstableTarball {
         config = config.nixpkgs.config;
@@ -36,6 +34,7 @@ in
     claude-code
     keymapp
     openrgb
+    prism-launcher
     spotify
     unstable.ollama-cuda
     vscode
@@ -45,14 +44,8 @@ in
   services.ollama = {
     enable = true;
     acceleration = "cuda";
+    package = pkgs.unstable.ollama-cuda;
   };
-
-  # Disable suspend
-  systemd.targets.sleep.enable = false;
-  systemd.targets.suspend.enable = false;
-  systemd.targets.hibernate.enable = false;
-  systemd.targets.hybrid-sleep.enable = false;
-  powerManagement.enable = false;
 
   # Enable openrgb
   services.hardware.openrgb.enable = true;
@@ -62,13 +55,11 @@ in
     enable = true;
     ports = [ 51234 ];
     settings = {
-      PasswordAuthentication = true;   # optional (disable if using keys only)
+      PasswordAuthentication = false;   # optional (disable if using keys only)
       PermitRootLogin = "no";
     };
   };
   networking.firewall.allowedTCPPorts = [ 51234 ];
-
-
 
   # Specify encrypted disk partition id
   boot.initrd.luks.devices."luks-29f1033f-b941-47c9-82cf-61b8672b2f58".device = "/dev/disk/by-uuid/29f1033f-b941-47c9-82cf-61b8672b2f58";
@@ -76,6 +67,14 @@ in
   # Enable OpenGL
   hardware.graphics = {
     enable = true;
+  };
+
+  # Enable steam
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
   # Load nvidia driver for Xorg and Wayland
