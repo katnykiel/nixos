@@ -34,7 +34,6 @@ in
     claude-code
     keymapp
     openrgb
-    prismlauncher
     spotify
     unstable.ollama-cuda
     vscode
@@ -55,7 +54,7 @@ in
     enable = true;
     ports = [ 51234 ];
     settings = {
-      PasswordAuthentication = false;   # optional (disable if using keys only)
+      PasswordAuthentication = true;   # optional (disable if using keys only)
       PermitRootLogin = "no";
     };
   };
@@ -67,14 +66,6 @@ in
   # Enable OpenGL
   hardware.graphics = {
     enable = true;
-  };
-
-  # Enable steam
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
   # Load nvidia driver for Xorg and Wayland
