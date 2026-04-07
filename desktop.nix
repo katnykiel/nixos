@@ -35,7 +35,7 @@ in
     jdk25
     keymapp
     openrgb
-    prism-launcher
+    prismlauncher
     spotify
     unstable.ollama-cuda
     vscode
