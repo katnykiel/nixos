@@ -32,8 +32,10 @@ in
   environment.systemPackages = with pkgs; [
     btop-cuda
     claude-code
+    jdk25
     keymapp
     openrgb
+    prism-launcher
     spotify
     unstable.ollama-cuda
     vscode
@@ -54,11 +56,46 @@ in
     enable = true;
     ports = [ 51234 ];
     settings = {
-      PasswordAuthentication = true;   # optional (disable if using keys only)
+      PasswordAuthentication = false;   # optional (disable if using keys only)
       PermitRootLogin = "no";
     };
   };
   networking.firewall.allowedTCPPorts = [ 51234 ];
+
+  # Enable fail2ban to protect against brute-force attacks on SSH
+  services.fail2ban = {
+    enable = true;
+    jails = {
+      sshd = {
+        settings = {
+          enabled = true;
+          port = "51234";
+          filter = "sshd";
+          logpath = "/var/log/auth.log";
+          maxretry = 5;
+          findtime = "10m";
+          bantime = "1h";
+        };
+      };
+    };
+  };
+
+  # Disable the GNOME3/GDM auto-suspend feature that cannot be disabled in GUI!
+  # If no user is logged in, the machine will power down after 20 minutes.
+  services.displayManager.gdm.autoSuspend = false;
+  systemd.targets.sleep.enable = false;
+  systemd.targets.suspend.enable = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
+
+
+  # Enable steam
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+  };
 
   # Specify encrypted disk partition id
   boot.initrd.luks.devices."luks-29f1033f-b941-47c9-82cf-61b8672b2f58".device = "/dev/disk/by-uuid/29f1033f-b941-47c9-82cf-61b8672b2f58";
