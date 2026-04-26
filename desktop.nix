@@ -62,6 +62,13 @@ in
   };
   networking.firewall.allowedTCPPorts = [ 51234 ];
 
+  # Enable immich (test)
+  services.immich.enable = true;
+  services.immich.port = 2283;
+  
+  services.immich.host = "0.0.0.0";
+  services.immich.openFirewall = true;
+
   # Enable fail2ban to protect against brute-force attacks on SSH
   services.fail2ban = {
     enable = true;
