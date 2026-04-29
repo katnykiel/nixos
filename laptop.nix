@@ -8,8 +8,8 @@
 
   networking.hostName = "laptop";
 
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Use LTS kernel.
+  boot.kernelPackages = pkgs.linuxPackages_6_12;
 
   # Enable touchpad support (enabled default in most desktopManager).
   services.libinput.enable = true;
@@ -28,7 +28,7 @@
 
   # Specify encrypted disk partition id
   boot.initrd.luks.devices."luks-198aef4c-3bd7-4efd-bcd9-bbf207d06b4a".device = "/dev/disk/by-uuid/198aef4c-3bd7-4efd-bcd9-bbf207d06b4a";
-  
+
   # Adds some fonts
   fonts.packages = with pkgs; [
     nerd-fonts.fira-code
