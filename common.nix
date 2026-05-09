@@ -4,6 +4,14 @@
 
 { config, pkgs, lib, ... }:
 
+
+let
+  unstableTarball =
+    fetchTarball
+      https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz;
+in
+
+
 {
 
   # Bootloader.
@@ -84,6 +92,16 @@
 
   # Change the default shell to zsh
   users.defaultUserShell = pkgs.zsh; 
+
+  # Allow unfree and unstable derivative
+  nixpkgs.config = {
+    allowUnfree = true;
+    packageOverrides = pkgs: {
+      unstable = import unstableTarball {
+        config = config.nixpkgs.config;
+      };
+    };
+  };
 
   # Install various programs
   programs.firefox.enable = true;
