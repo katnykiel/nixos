@@ -20,7 +20,11 @@ in
 
   # Enable automatic updates
   system.autoUpgrade.enable = true;
+  system.autoUpgrade.operation = "boot";
   # system.autoUpgrade.allowReboot = true;
+  
+  # Enable cleaning up storage
+  nix.optimise.automatic = true;
 
   # Enable 'experimental' features
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
