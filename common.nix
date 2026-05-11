@@ -191,6 +191,8 @@ in
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
+  networking.firewall.allowedUDPPorts = [ 7777 ];
+
   # Enable glance service
   services.glance.enable = true;
   services.glance.settings = {
