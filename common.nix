@@ -4,6 +4,14 @@
 
 { config, pkgs, lib, ... }:
 
+
+let
+  unstableTarball =
+    fetchTarball
+      https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz;
+in
+
+
 {
 
   # Bootloader.
@@ -89,6 +97,16 @@
   # Change the default shell to zsh
   users.defaultUserShell = pkgs.zsh; 
 
+  # Allow unfree and unstable derivative
+  nixpkgs.config = {
+    allowUnfree = true;
+    packageOverrides = pkgs: {
+      unstable = import unstableTarball {
+        config = config.nixpkgs.config;
+      };
+    };
+  };
+
   # Install various programs
   programs.firefox.enable = true;
   programs.gpaste.enable = true;
@@ -96,6 +114,8 @@
 
   environment.systemPackages = with pkgs; [
     anki
+    audacity
+    btop-cuda
     docker-compose
     fastfetch
     git
@@ -103,22 +123,26 @@
     gnomeExtensions.pop-shell
     gnomeExtensions.rounded-window-corners-reborn
     gnupg
+    jdk25
     kdePackages.kleopatra
     kitty
     libreoffice
     ncdu
     neovim
     newsboat
+    opencode
     pidgin
+    prismlauncher
     protonvpn-gui
     signal-desktop
-    spotify-player
+    spotify
     tectonic
     tinymist
     tor-browser
     typst
     uv
     vim
+    vscode
     vscodium
     weechat
     wget
@@ -134,6 +158,42 @@
   boot.loader.grub.extraConfig = ''
     set default=0
   '';
+
+
+  # Load nvidia driver for Xorg and Wayland
+  services.xserver.videoDrivers = ["nvidia"];
+
+  hardware.nvidia = {
+
+    # Modesetting is required.
+    modesetting.enable = true;
+
+    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
+    powerManagement.enable = false;
+
+    # Fine-grained power management. Turns off GPU when not in use.
+    powerManagement.finegrained = false;
+
+    # Use the NVidia open source kernel module (not to be confused with the
+    # independent third-party "nouveau" open source driver).
+    open = false;
+
+    # Enable the Nvidia settings menu,
+    nvidiaSettings = true;
+
+    # Optionally, you may need to select the appropriate driver version for your specific GPU.
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+
+   };
+
+
+  # Enable steam
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+  };
 
   # Enable glance service
   services.glance.enable = true;
